@@ -1,0 +1,103 @@
+version: '3.7'
+
+services:
+  currency-exchange:
+    image: sajinder/mmv4-currency-exchange-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8000:8000"
+    networks:
+      - currency-network
+    depends_on:
+      - naming-server
+      - config-server
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      MANAGEMENT.ZIPKIN.TRACING.ENDPOINT: http://zipkin-server:9411/api/v2/spans
+      SERVER.CONFIG.IMPORT: optional:configserver:http://config-server:8888
+
+  currency-conversion:
+    image: sajinder/mmv4-currency-conversion-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8100:8100"
+    networks:
+      - currency-network
+    depends_on:
+      - naming-server
+      - currency-exchange
+      - config-server
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      MANAGEMENT.ZIPKIN.TRACING.ENDPOINT: http://zipkin-server:9411/api/v2/spans
+      SERVER.CONFIG.IMPORT: optional:configserver:http://config-server:8888
+      
+  identity-service:
+    image: sajinder/mmv4-identity-service:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "9898:9898"
+    networks:
+      - currency-network
+    depends_on:
+      - naming-server
+      - mysqldb
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.DATASOURCE.URL: jdbc:mysql://mysqldb:3306/identitydb?allowPublicKeyRetrieval=true
+    volumes:
+      - .m2:/root/.m2
+  
+  api-gateway:
+    image: sajinder/mmv4-api-gateway:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8765:8765"
+    networks:
+      - currency-network
+    depends_on:
+      - naming-server
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      MANAGEMENT.ZIPKIN.TRACING.ENDPOINT: http://zipkin-server:9411/api/v2/spans
+
+  naming-server:
+    image: sajinder/mmv4-naming-server:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8761:8761"
+    networks:
+      - currency-network
+  
+  config-server:
+    image: sajinder/mmv4-config-server:0.0.1-SNAPSHOT
+    mem_limit: 700m
+    ports:
+      - "8888:8888"
+    networks:
+      - currency-network
+   
+
+  zipkin-server:
+    image: openzipkin/zipkin:2.23
+    mem_limit: 300m
+    ports:
+      - "9411:9411"
+    networks:
+      - currency-network
+  
+  mysqldb:
+    image: "mysql:8.0"
+    restart: always
+    ports:
+      - 3306:3306
+    networks:
+      - currency-network
+    environment:
+      MYSQL_DATABASE: identitydb
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+  
+networks:
+  currency-network:
