@@ -11,6 +11,7 @@ services:
     depends_on:
       - naming-server
       - config-server
+      - zipkin-server
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       MANAGEMENT.ZIPKIN.TRACING.ENDPOINT: http://zipkin-server:9411/api/v2/spans
@@ -27,6 +28,7 @@ services:
       - naming-server
       - currency-exchange
       - config-server
+      - zipkin-server
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       MANAGEMENT.ZIPKIN.TRACING.ENDPOINT: http://zipkin-server:9411/api/v2/spans
@@ -41,10 +43,10 @@ services:
       - currency-network
     depends_on:
       - naming-server
-      - mysqldb
+      - mysqldb      
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
-      SPRING.DATASOURCE.URL: jdbc:mysql://mysqldb:3306/identitydb?allowPublicKeyRetrieval=true
+      SPRING.DATASOURCE.URL: jdbc:mysql://mysqldb:3306/identitydb?allowPublicKeyRetrieval=true      
     volumes:
       - .m2:/root/.m2
   
@@ -57,6 +59,7 @@ services:
       - currency-network
     depends_on:
       - naming-server
+      - zipkin-server
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       MANAGEMENT.ZIPKIN.TRACING.ENDPOINT: http://zipkin-server:9411/api/v2/spans
@@ -100,3 +103,4 @@ services:
   
 networks:
   currency-network:
+    external: false
