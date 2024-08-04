@@ -30,7 +30,8 @@ public class AuthConfig {
                         authorizeRequests
                                 .requestMatchers("/auth/register",
                                         "/auth/token",
-                                        "/auth/validate").permitAll()
+                                        "/auth/validate",
+                                        "/auth/refreshToken").permitAll()
 
                 )
                 .build();
