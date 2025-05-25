@@ -99,7 +99,6 @@ services:
       MYSQL_PASSWORD: root
       MYSQL_ROOT_PASSWORD: root
   
-  
 networks:
   currency-network:
     external: false
