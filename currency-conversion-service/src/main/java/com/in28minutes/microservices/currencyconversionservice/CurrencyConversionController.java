@@ -28,7 +28,7 @@ public class CurrencyConversionController {
         Map<String, String> uriVariables = new HashMap<>();
         uriVariables.put("from", from);
         uriVariables.put("to", to);
-        ResponseEntity<CurrencyConversion> responseEntity = restTemplate.getForEntity("http://host.docker.internal:8000/currency-exchange/from/USD/to/INR",
+        ResponseEntity<CurrencyConversion> responseEntity = restTemplate.getForEntity("http://currency-exchange:8000/currency-exchange/from/USD/to/INR",
                 CurrencyConversion.class, uriVariables);
         CurrencyConversion currencyConversion = responseEntity.getBody();
         return new CurrencyConversion(currencyConversion.getId(),
