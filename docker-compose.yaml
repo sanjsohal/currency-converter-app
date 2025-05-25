@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   currency-exchange:
     image: sajinder/mmv4-currency-exchange-service:0.0.1-SNAPSHOT
